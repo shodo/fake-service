@@ -1,0 +1,132 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: minerva
+  description: Service that manage Programs
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    jenkins.io/job-full-name: 'Platform/Minerva'
+    sonarqube.org/project-key: minerva
+    datadoghq.com/dashboard-url: https://p.datadoghq.com/sb/7cdf9474-8810-11ec-bfec-da7ad0900002-4819aa5c4dc70b8ce955e4bd332440ab
+    rollbar.com/project-slug: minerva
+spec:
+  type: service
+  owner: career
+  lifecycle: production
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: minerva-webapp
+  description: Minerva webapp application to manage GQL request and CRUD Program operations
+  tags:
+    - kotlin-1-7
+    - spring-boot-3-1
+    - webapp
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    jenkins.io/job-full-name: 'Platform/Minerva'
+    sonarqube.org/project-key: minerva
+    datadoghq.com/dashboard-url: https://p.datadoghq.com/sb/7cdf9474-8810-11ec-bfec-da7ad0900002-4819aa5c4dc70b8ce955e4bd332440ab
+    rollbar.com/project-slug: minerva
+spec:
+  type: service
+  owner: career
+  lifecycle: production
+  dependsOn:
+    - resource:minerva-db
+  system: minerva
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: minerva-worker-default
+  description: Minerva worker application to manage asynchronous task
+  tags:
+    - kotlin-1-7
+    - spring-boot-3-1
+    - pulsar-consumer
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    jenkins.io/job-full-name: 'Platform/Minerva'
+    sonarqube.org/project-key: minerva
+    datadoghq.com/dashboard-url: https://p.datadoghq.com/sb/7cdf9474-8810-11ec-bfec-da7ad0900002-4819aa5c4dc70b8ce955e4bd332440ab
+    rollbar.com/project-slug: minerva
+spec:
+  type: service
+  owner: career
+  lifecycle: production
+  dependsOn:
+    - resource:minerva-db
+    - resource:pulsar-cluster
+  system: minerva
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: minerva-consumer-default
+  description: Minerva consumer for ca.autobus events
+  tags:
+    - kotlin-1-7
+    - spring-boot-3-1
+    - pulsar-consumer
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    jenkins.io/job-full-name: 'Platform/Minerva'
+    sonarqube.org/project-key: minerva
+    datadoghq.com/dashboard-url: https://p.datadoghq.com/sb/7cdf9474-8810-11ec-bfec-da7ad0900002-4819aa5c4dc70b8ce955e4bd332440ab
+    rollbar.com/project-slug: minerva
+spec:
+  type: service
+  owner: career
+  lifecycle: production
+  dependsOn:
+    - resource:minerva-db
+    - resource:pulsar-cluster
+  system: minerva
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: minerva-consumer-schema-registry
+  description: Minerva consumer for schema-registry validated events
+  tags:
+    - kotlin-1-7
+    - spring-boot-3-1
+    - pulsar-consumer
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    jenkins.io/job-full-name: 'Platform/Minerva'
+    sonarqube.org/project-key: minerva
+    datadoghq.com/dashboard-url: https://p.datadoghq.com/sb/7cdf9474-8810-11ec-bfec-da7ad0900002-4819aa5c4dc70b8ce955e4bd332440ab
+    rollbar.com/project-slug: minerva
+spec:
+  type: service
+  owner: career
+  lifecycle: production
+  dependsOn:
+    - resource:minerva-db
+    - resource:pulsar-cluster
+  system: minerva
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: minerva-scheduler
+  description: Minerva service that runs tasks scheduled on specific times or intervals
+  tags:
+    - kotlin-1-7
+    - spring-boot-3-1
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    jenkins.io/job-full-name: 'Platform/Minerva'
+    sonarqube.org/project-key: minerva
+    datadoghq.com/dashboard-url: https://p.datadoghq.com/sb/7cdf9474-8810-11ec-bfec-da7ad0900002-4819aa5c4dc70b8ce955e4bd332440ab
+    rollbar.com/project-slug: minerva
+spec:
+  type: service
+  owner: career
+  lifecycle: production
+  dependsOn:
+    - resource:minerva-db
+  system: minerva

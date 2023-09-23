@@ -1,0 +1,44 @@
+x-base-data:
+  base-envs: &base-envs
+    DB_DEFAULT_NAME: fakeservice
+    DB_DEFAULT_USERNAME: fakeservice
+    DB_DEFAULT_PASSWORD: fakeservice
+    DB_DEFAULT_PORT: 5432
+    DB_DEFAULT_HOST: fakeservice-postgres
+
+services:
+  fakeservice-postgres:
+    image: 713209205358.dkr.ecr.us-west-2.amazonaws.com/cloudacademy/fakeservice-dev-psql-data:latest
+    environment:
+      POSTGRES_USER: fakeservice
+      POSTGRES_PASSWORD: fakeservice
+      POSTGRES_DB: fakeservice
+    ports:
+      - 5460:5432
+    networks:
+      - platform
+
+  fakeservice-webapp:
+    build:
+      context: ${FAKESERVICE_SERVICE_DOCKER_BUILD_PATH:-.}
+      target: production
+    image: cloudacademy/fakeservice
+    environment:
+      <<: *base-envs
+      RUNTIME_TYPE: webapp
+    volumes:
+      - ${FAKESERVICE_SERVICE_DOCKER_BUILD_PATH:-./}fakeservice/:/fakeservice/
+    ports:
+      - 25400:25400
+    entrypoint: ["/wait-for-it.sh", "fakeservice-postgres:5432", "--", "/entrypoint.sh"]
+    depends_on:
+      - fakeservice-postgres
+    networks:
+      - platform
+
+networks:
+  platform:
+    driver: bridge
+
+  test:
+    driver: bridge
