@@ -8,7 +8,7 @@ x-base-data:
 
 services:
   fakeservice-postgres:
-    image: 713209205358.dkr.ecr.us-west-2.amazonaws.com/cloudacademy/fakeservice-dev-psql-data:latest
+    image: postgres:latest
     environment:
       POSTGRES_USER: fakeservice
       POSTGRES_PASSWORD: fakeservice
@@ -18,16 +18,16 @@ services:
     networks:
       - platform
 
-  fakeservice-webapp:
+  fakeservice-standard:
     build:
-      context: ${FAKESERVICE_SERVICE_DOCKER_BUILD_PATH:-.}
+      context: .
+      dockerfile: standard.Dockerfile
       target: production
-    image: cloudacademy/fakeservice
     environment:
       <<: *base-envs
       RUNTIME_TYPE: webapp
     volumes:
-      - ${FAKESERVICE_SERVICE_DOCKER_BUILD_PATH:-./}fakeservice/:/fakeservice/
+      - ./fakeservice/:/fakeservice/
     ports:
       - 25400:25400
     entrypoint: ["/wait-for-it.sh", "fakeservice-postgres:5432", "--", "/entrypoint.sh"]
@@ -35,6 +35,60 @@ services:
       - fakeservice-postgres
     networks:
       - platform
+
+  fakeservice-indexer:
+    build:
+      context: .
+      dockerfile: indexer.Dockerfile
+      target: production
+    environment:
+      <<: *base-envs
+      RUNTIME_TYPE: webapp
+    volumes:
+      - ./fakeservice/:/fakeservice/
+    ports:
+      - 25400:25400
+    entrypoint: [ "/wait-for-it.sh", "fakeservice-postgres:5432", "--", "/entrypoint.sh" ]
+    depends_on:
+      - fakeservice-postgres
+    networks:
+      - platform
+
+  fakeservice-aot:
+    build:
+      context: .
+      dockerfile: aot.Dockerfile
+      target: production
+    environment:
+      <<: *base-envs
+      RUNTIME_TYPE: webapp-aot
+    volumes:
+      - ./fakeservice/:/fakeservice/
+    ports:
+      - 25400:25400
+    entrypoint: [ "/wait-for-it.sh", "fakeservice-postgres:5432", "--", "/entrypoint.sh" ]
+    depends_on:
+      - fakeservice-postgres
+    networks:
+      - platform
+
+#  fakeservice-webapp:
+#    build:
+#      context: ${FAKESERVICE_SERVICE_DOCKER_BUILD_PATH:-.}
+#      target: production
+#    image: cloudacademy/fakeservice
+#    environment:
+#      <<: *base-envs
+#      RUNTIME_TYPE: webapp
+#    volumes:
+#      - ${FAKESERVICE_SERVICE_DOCKER_BUILD_PATH:-./}fakeservice/:/fakeservice/
+#    ports:
+#      - 25400:25400
+#    entrypoint: ["/wait-for-it.sh", "fakeservice-postgres:5432", "--", "/entrypoint.sh"]
+#    depends_on:
+#      - fakeservice-postgres
+#    networks:
+#      - platform
 
 networks:
   platform:
